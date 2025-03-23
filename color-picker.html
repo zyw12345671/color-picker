@@ -1,0 +1,1907 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高级颜色选择器</title>
+    <style>
+        :root {
+            --primary-color: #4a6cf7;
+            --secondary-color: #f5f8ff;
+            --text-color: #333;
+            --border-color: #ddd;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: var(--primary-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .left-panel, .right-panel {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .color-preview {
+            height: 200px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px var(--shadow-color);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .color-values {
+            background-color: var(--secondary-color);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px var(--shadow-color);
+        }
+
+        .color-value-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .color-value-group label {
+            width: 80px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .color-value-group input[type="text"] {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .color-value-group input[type="text"]:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(74, 108, 247, 0.2);
+            outline: none;
+        }
+
+        .color-value-group button {
+            margin-left: 10px;
+            padding: 8px 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .color-value-group button:hover {
+            background-color: #3a5ce4;
+        }
+
+        .slider-container {
+            margin-bottom: 20px;
+            background-color: var(--secondary-color);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px var(--shadow-color);
+        }
+
+        .slider-group {
+            margin-bottom: 15px;
+        }
+
+        .slider-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+        }
+
+        .slider-row input[type="range"] {
+            flex: 1;
+            height: 8px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #ddd;
+            outline: none;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        .slider-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .slider-row input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .slider-row input[type="range"]:hover::-webkit-slider-thumb {
+            transform: scale(1.1);
+        }
+
+        .slider-row input[type="range"]:hover::-moz-range-thumb {
+            transform: scale(1.1);
+        }
+
+        .slider-row input[type="number"] {
+            width: 60px;
+            margin-left: 15px;
+            padding: 5px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .color-picker-container {
+            background-color: var(--secondary-color);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px var(--shadow-color);
+        }
+
+        .color-picker-container h3 {
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+
+        .color-wheel {
+            width: 100%;
+            height: 200px;
+            position: relative;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            border-radius: 10px;
+            cursor: crosshair;
+        }
+
+        .eyedropper-tool {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .eyedropper-button {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .eyedropper-button:hover {
+            background-color: #3a5ce4;
+        }
+
+        .eyedropper-button svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .color-history {
+            background-color: var(--secondary-color);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px var(--shadow-color);
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .color-history h3 {
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+
+        .history-colors {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            gap: 10px;
+        }
+
+        .history-color {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+        }
+
+        .history-color:hover {
+            transform: scale(1.1);
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+
+        .tooltip {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .color-harmony {
+            background-color: var(--secondary-color);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 4px 10px var(--shadow-color);
+        }
+
+        .color-harmony h3 {
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+
+        .harmony-options {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+            flex-wrap: nowrap;
+            justify-content: space-between;
+        }
+
+        .harmony-option {
+            padding: 6px 8px;
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 12px;
+            text-align: center;
+            flex: 1;
+        }
+
+        .harmony-option.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .harmony-colors {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+
+        .harmony-color {
+            height: 40px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .harmony-color:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 3px 8px var(--shadow-color);
+        }
+
+        .theme-switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            color: white;
+            font-size: 20px;
+        }
+
+        .dark-mode {
+            --primary-color: #7289da;
+            --secondary-color: #2f3136;
+            --text-color: #dcddde;
+            --border-color: #40444b;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #2c2f33 0%, #23272a 100%);
+        }
+
+        .dark-mode .container {
+            background-color: #36393f;
+        }
+
+        .dark-mode .color-value-group input[type="text"],
+        .dark-mode .slider-row input[type="number"] {
+            background-color: #40444b;
+            color: #dcddde;
+            border-color: #4f545c;
+        }
+
+        .dark-mode .harmony-option {
+            background-color: #40444b;
+            color: #dcddde;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .left-panel, .right-panel {
+                width: 100%;
+            }
+            
+            .color-wheel {
+                height: 150px;
+            }
+        }
+
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .container {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transform: translateX(120%);
+            transition: transform 0.3s ease-out;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification-icon {
+            font-size: 20px;
+        }
+
+        .notification-message {
+            flex: 1;
+        }
+
+        .notification-close {
+            cursor: pointer;
+            font-size: 18px;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        .notification-close:hover {
+            opacity: 1;
+        }
+        
+        .gradient-options {
+            margin-bottom: 15px;
+        }
+
+        .gradient-type-options {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+            justify-content: space-between;
+        }
+
+        .gradient-option {
+            padding: 6px 8px;
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 12px;
+            text-align: center;
+            flex: 1;
+        }
+
+        .gradient-option.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .gradient-direction-options {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .direction-option {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .direction-option.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .small-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            transition: var(--transition);
+        }
+
+        .small-button:hover {
+            background-color: #3a5ce4;
+        }
+
+        .color-stops-container {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .color-stop {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .color-stop input[type="color"] {
+            width: 30px;
+            height: 30px;
+        }
+
+        .color-stop input[type="number"] {
+            width: 50px;
+        }
+
+        .remove-stop {
+            color: #ff4d4d;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        /*径向渐变圆形和椭圆选项样式*/
+        .radial-direction-options {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .radial-direction-option {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .radial-direction-option.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .radial-direction-option svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .color-presets {
+            background-color: var(--secondary-color);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px var(--shadow-color);
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .color-presets h3 {
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+
+        .presets-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .preset-category {
+            margin-bottom: 15px;
+        }
+
+        .preset-category:last-child {
+            margin-bottom: 0;
+        }
+
+        .preset-category h4 {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+
+        .preset-colors {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .preset-color {
+            height: 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 1px solid var(--border-color);
+        }
+
+        .preset-color:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            高级颜色选择器
+            <div class="theme-switch" id="themeSwitch">🌓</div>
+        </div>
+        <div class="content">
+            <div class="left-panel">
+                <div class="color-preview" id="colorPreview"></div>
+                
+                <div class="color-values">
+                    <div class="color-value-group">
+                        <label for="hexValue">HEX</label>
+                        <input type="text" id="hexValue" value="#4a6cf7">
+                        <button id="copyHex">复制</button>
+                    </div>
+                    <div class="color-value-group">
+                        <label for="rgbValue">RGB</label>
+                        <input type="text" id="rgbValue" value="rgb(74, 108, 247)">
+                        <button id="copyRgb">复制</button>
+                    </div>
+                    <div class="color-value-group">
+                        <label for="hslValue">HSL</label>
+                        <input type="text" id="hslValue" value="hsl(230, 91%, 63%)">
+                        <button id="copyHsl">复制</button>
+                    </div>
+                </div>
+                
+                <div class="slider-container">
+                    <div class="slider-group">
+                        <label for="redSlider">红色 (R)</label>
+                        <div class="slider-row">
+                            <input type="range" id="redSlider" min="0" max="255" value="74">
+                            <input type="number" id="redValue" min="0" max="255" value="74">
+                        </div>
+                    </div>
+                    <div class="slider-group">
+                        <label for="greenSlider">绿色 (G)</label>
+                        <div class="slider-row">
+                            <input type="range" id="greenSlider" min="0" max="255" value="108">
+                            <input type="number" id="greenValue" min="0" max="255" value="108">
+                        </div>
+                    </div>
+                    <div class="slider-group">
+                        <label for="blueSlider">蓝色 (B)</label>
+                        <div class="slider-row">
+                            <input type="range" id="blueSlider" min="0" max="255" value="247">
+                            <input type="number" id="blueValue" min="0" max="255" value="247">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="slider-container">
+                    <div class="slider-group">
+                        <label for="hueSlider">色相 (H)</label>
+                        <div class="slider-row">
+                            <input type="range" id="hueSlider" min="0" max="360" value="230">
+                            <input type="number" id="hueValue" min="0" max="360" value="230">
+                        </div>
+                    </div>
+                    <div class="slider-group">
+                        <label for="saturationSlider">饱和度 (S)</label>
+                        <div class="slider-row">
+                            <input type="range" id="saturationSlider" min="0" max="100" value="91">
+                            <input type="number" id="saturationValue" min="0" max="100" value="91">
+                        </div>
+                    </div>
+                    <div class="slider-group">
+                        <label for="lightnessSlider">亮度 (L)</label>
+                        <div class="slider-row">
+                            <input type="range" id="lightnessSlider" min="0" max="100" value="63">
+                            <input type="number" id="lightnessValue" min="0" max="100" value="63">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="color-history">
+                    <h3>颜色历史</h3>
+                    <div class="history-colors" id="colorHistory"></div>
+                </div>
+            </div>
+            
+            <div class="right-panel">
+                <div class="color-picker-container">
+                    <h3>颜色选择器</h3>
+                    <div class="color-wheel" id="colorWheel">
+                        <canvas id="colorCanvas"></canvas>
+                    </div>
+                    
+                    <div class="eyedropper-tool">
+                        <button class="eyedropper-button" id="eyedropperButton">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 16.5l-6-6L3 19.5V21h1.5l9-9 6 6-1.5 1.5z"></path>
+                                <path d="M16 2L9 9"></path>
+                                <path d="M21 7l-6-6"></path>
+                            </svg>
+                            屏幕取色
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="color-harmony">
+                    <h3>颜色和谐</h3>
+                    <div class="harmony-options">
+                        <div class="harmony-option active" data-harmony="complementary">互补色</div>
+                        <div class="harmony-option" data-harmony="analogous">类似色</div>
+                        <div class="harmony-option" data-harmony="triadic">三等分色</div>
+                        <div class="harmony-option" data-harmony="split-complementary">分裂互补色</div>
+                        <div class="harmony-option" data-harmony="tetradic">四等分色</div>
+                    </div>
+                    <div class="harmony-colors" id="harmonyColors"></div>
+                </div>
+                
+                <div class="color-picker-container" style="margin-top: 20px;">
+                    <h3>颜色渐变</h3>
+                    
+                    <div class="gradient-options">
+                        <div class="gradient-type-options">
+                            <div class="gradient-option active" data-type="linear">线性渐变</div>
+                            <div class="gradient-option" data-type="radial">径向渐变</div>
+                            <div class="gradient-option" data-type="conic">角度渐变</div>
+                        </div>
+                        
+                        <div class="gradient-direction-options" id="linearDirections">
+                            <div class="direction-option active" data-direction="to right">→</div>
+                            <div class="direction-option" data-direction="to bottom">↓</div>
+                            <div class="direction-option" data-direction="to right bottom">↘</div>
+                            <div class="direction-option" data-direction="to left bottom">↙</div>
+                        </div>
+                        
+                        <div class="radial-direction-options" id="radialDirections" style="display: none;">
+                            <div class="radial-direction-option active" data-shape="circle">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                </svg>
+                            </div>
+                            <div class="radial-direction-option" data-shape="ellipse">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <ellipse cx="12" cy="12" rx="10" ry="6"></ellipse>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <canvas id="gradientCanvas" height="80" style="width: 100%; border-radius: 10px; margin-top: 10px;"></canvas>
+                    <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                        <input type="color" id="gradientColor1" value="#4a6cf7">
+                        <button id="addColorStop" class="small-button">+</button>
+                        <input type="color" id="gradientColor2" value="#f5f8ff">
+                    </div>
+                    <div id="gradientColorStops" class="color-stops-container"></div>
+                </div>
+                
+                <div class="color-presets">
+                    <h3>颜色预设</h3>
+                    <div class="presets-container">
+                        <div class="preset-category">
+                            <h4>材质风格</h4>
+                            <div class="preset-colors">
+                                <div class="preset-color" style="background: linear-gradient(to right, #f6d365, #fda085);" data-colors="#f6d365,#fda085"></div>
+                                <div class="preset-color" style="background: linear-gradient(to right, #a1c4fd, #c2e9fb);" data-colors="#a1c4fd,#c2e9fb"></div>
+                                <div class="preset-color" style="background: linear-gradient(to right, #84fab0, #8fd3f4);" data-colors="#84fab0,#8fd3f4"></div>
+                                <div class="preset-color" style="background: linear-gradient(to right, #a6c0fe, #f68084);" data-colors="#a6c0fe,#f68084"></div>
+                            </div>
+                        </div>
+                        <div class="preset-category">
+                            <h4>流行配色</h4>
+                            <div class="preset-colors">
+                                <div class="preset-color" style="background: linear-gradient(to right, #4a6cf7, #f5f8ff);" data-colors="#4a6cf7,#f5f8ff"></div>
+                                <div class="preset-color" style="background: linear-gradient(to right, #00c6fb, #005bea);" data-colors="#00c6fb,#005bea"></div>
+                                <div class="preset-color" style="background: linear-gradient(to right, #ff758c, #ff7eb3);" data-colors="#ff758c,#ff7eb3"></div>
+                                <div class="preset-color" style="background: linear-gradient(to right, #16a085, #f4d03f);" data-colors="#16a085,#f4d03f"></div>
+                            </div>
+                        </div>
+                        <div class="preset-category">
+                            <h4>配色方案</h4>
+                            <div class="preset-colors">
+                                <div class="preset-color" style="background: linear-gradient(to right, #3498db, #2980b9, #1abc9c, #16a085);" data-colors="#3498db,#2980b9,#1abc9c,#16a085"></div>
+                                <div class="preset-color" style="background: linear-gradient(to right, #e74c3c, #c0392b, #f39c12, #d35400);" data-colors="#e74c3c,#c0392b,#f39c12,#d35400"></div>
+                                <div class="preset-color" style="background: linear-gradient(to right, #9b59b6, #8e44ad, #2c3e50, #34495e);" data-colors="#9b59b6,#8e44ad,#2c3e50,#34495e"></div>
+                                <div class="preset-color" style="background: linear-gradient(to right, #2ecc71, #27ae60, #f1c40f, #f39c12);" data-colors="#2ecc71,#27ae60,#f1c40f,#f39c12"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="tooltip" id="tooltip"></div>
+    <div class="notification" id="notification">
+        <div class="notification-icon">✓</div>
+        <div class="notification-message" id="notificationMessage"></div>
+        <div class="notification-close" id="notificationClose">×</div>
+    </div>
+
+    <script>
+        // 渐变相关变量
+        let gradientType = 'linear';
+        let gradientDirection = 'to right';
+        let radialShape = 'circle';
+        let gradientColors = [
+            { color: '#4a6cf7', position: 0 },
+            { color: '#f5f8ff', position: 100 }
+        ];
+
+        // 更新渐变函数
+        function updateGradient() {
+            const width = gradientCanvas.width;
+            const height = gradientCanvas.height;
+            gradientCtx.clearRect(0, 0, width, height);
+            
+            let gradient;
+            
+            if (gradientType === 'linear') {
+                // 创建线性渐变
+                switch (gradientDirection) {
+                    case 'to right':
+                        gradient = gradientCtx.createLinearGradient(0, 0, width, 0);
+                        break;
+                    case 'to bottom':
+                        gradient = gradientCtx.createLinearGradient(0, 0, 0, height);
+                        break;
+                    case 'to right bottom':
+                        gradient = gradientCtx.createLinearGradient(0, 0, width, height);
+                        break;
+                    case 'to left bottom':
+                        gradient = gradientCtx.createLinearGradient(width, 0, 0, height);
+                        break;
+                    default:
+                        gradient = gradientCtx.createLinearGradient(0, 0, width, 0);
+                }
+            } else if (gradientType === 'radial') {
+                // 创建径向渐变
+                const centerX = width / 2;
+                const centerY = height / 2;
+                const radius = Math.min(width, height) / 2;
+                
+                if (radialShape === 'circle') {
+                    gradient = gradientCtx.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
+                } else {
+                    gradient = gradientCtx.createRadialGradient(centerX, centerY, 0, centerX, centerY, width / 2);
+                }
+            } else if (gradientType === 'conic') {
+                // 创建角度渐变 (注意：某些浏览器可能不支持)
+                const centerX = width / 2;
+                const centerY = height / 2;
+                
+                if (typeof gradientCtx.createConicGradient === 'function') {
+                    gradient = gradientCtx.createConicGradient(0, centerX, centerY);
+                } else {
+                    // 如果不支持角度渐变，退回到线性渐变
+                    gradient = gradientCtx.createLinearGradient(0, 0, width, 0);
+                }
+            }
+            
+            // 添加渐变色标
+            gradientColors.forEach(stop => {
+                gradient.addColorStop(stop.position / 100, stop.color);
+            });
+            
+            gradientCtx.fillStyle = gradient;
+            gradientCtx.fillRect(0, 0, width, height);
+            
+            // 更新CSS渐变代码
+            updateGradientCode();
+        }
+
+        // 更新渐变代码显示
+        function updateGradientCode() {
+            let gradientCode = '';
+            
+            if (gradientType === 'linear') {
+                gradientCode = `linear-gradient(${gradientDirection}, `;
+            } else if (gradientType === 'radial') {
+                gradientCode = `radial-gradient(${radialShape} at center, `;
+            } else if (gradientType === 'conic') {
+                gradientCode = `conic-gradient(from 0deg at center, `;
+            }
+            
+            gradientColors.forEach((stop, index) => {
+                gradientCode += `${stop.color} ${stop.position}%`;
+                if (index < gradientColors.length - 1) {
+                    gradientCode += ', ';
+                }
+            });
+            
+            gradientCode += ')';
+            
+            // 如果有渐变代码显示元素，更新它
+            const gradientCodeElement = document.getElementById('gradientCode');
+            if (gradientCodeElement) {
+                gradientCodeElement.textContent = gradientCode;
+            }
+        }
+
+        // 添加渐变选项事件监听器
+        function setupGradientEvents() {
+            // 渐变类型选择
+            const gradientOptions = document.querySelectorAll('.gradient-option');
+            gradientOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    gradientOptions.forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                    
+                    gradientType = option.dataset.type;
+                    
+                    // 显示/隐藏相应的方向选项
+                    if (gradientType === 'linear') {
+                        document.getElementById('linearDirections').style.display = 'flex';
+                        document.getElementById('radialDirections').style.display = 'none';
+                    } else if (gradientType === 'radial') {
+                        document.getElementById('linearDirections').style.display = 'none';
+                        document.getElementById('radialDirections').style.display = 'flex';
+                    } else {
+                        document.getElementById('linearDirections').style.display = 'none';
+                        document.getElementById('radialDirections').style.display = 'none';
+                    }
+                    
+                    updateGradient();
+                });
+            });
+            
+            // 线性渐变方向选择
+            const linearDirections = document.querySelectorAll('#linearDirections .direction-option');
+            linearDirections.forEach(direction => {
+                direction.addEventListener('click', () => {
+                    linearDirections.forEach(dir => dir.classList.remove('active'));
+                    direction.classList.add('active');
+                    
+                    gradientDirection = direction.dataset.direction;
+                    updateGradient();
+                });
+            });
+            
+            // 径向渐变形状选择
+            const radialDirections = document.querySelectorAll('#radialDirections .radial-direction-option');
+            radialDirections.forEach(shape => {
+                shape.addEventListener('click', () => {
+                    radialDirections.forEach(s => s.classList.remove('active'));
+                    shape.classList.add('active');
+                    
+                    radialShape = shape.dataset.shape;
+                    updateGradient();
+                });
+            });
+            
+            // 添加色标按钮
+            document.getElementById('addColorStop').addEventListener('click', () => {
+                if (gradientColors.length < 5) { // 限制最多5个色标
+                    const newColor = '#ffffff';
+                    const newPosition = 50; // 默认在中间
+                    
+                    gradientColors.push({ color: newColor, position: newPosition });
+                    gradientColors.sort((a, b) => a.position - b.position);
+                    
+                    updateGradientColorStops();
+                    updateGradient();
+                }
+            });
+            
+            // 初始渐变色标输入
+            gradientColor1.addEventListener('input', () => {
+                gradientColors[0].color = gradientColor1.value;
+                updateGradient();
+            });
+            
+            gradientColor2.addEventListener('input', () => {
+                gradientColors[gradientColors.length - 1].color = gradientColor2.value;
+                updateGradient();
+            });
+        }
+
+        // 更新渐变色标显示
+        function updateGradientColorStops() {
+            const container = document.getElementById('gradientColorStops');
+            container.innerHTML = '';
+            
+            // 只显示额外添加的色标（第一个和最后一个已经有专门的输入框）
+            for (let i = 1; i < gradientColors.length - 1; i++) {
+                const stop = gradientColors[i];
+                
+                const stopElement = document.createElement('div');
+                stopElement.className = 'color-stop';
+                
+                const colorInput = document.createElement('input');
+                colorInput.type = 'color';
+                colorInput.value = stop.color;
+                colorInput.addEventListener('input', () => {
+                    stop.color = colorInput.value;
+                    updateGradient();
+                });
+                
+                const positionInput = document.createElement('input');
+                positionInput.type = 'number';
+                positionInput.min = 0;
+                positionInput.max = 100;
+                positionInput.value = stop.position;
+                positionInput.addEventListener('change', () => {
+                    stop.position = Math.max(0, Math.min(100, parseInt(positionInput.value)));
+                    positionInput.value = stop.position;
+                    gradientColors.sort((a, b) => a.position - b.position);
+                    updateGradientColorStops();
+                    updateGradient();
+                });
+                
+                const removeButton = document.createElement('span');
+                removeButton.className = 'remove-stop';
+                removeButton.textContent = '×';
+                removeButton.addEventListener('click', () => {
+                    gradientColors.splice(i, 1);
+                    updateGradientColorStops();
+                    updateGradient();
+                });
+                
+                stopElement.appendChild(colorInput);
+                stopElement.appendChild(positionInput);
+                stopElement.appendChild(removeButton);
+                
+                container.appendChild(stopElement);
+            }
+        }
+        
+        // 主要变量
+        let currentColor = {
+            r: 74,
+            g: 108,
+            b: 247,
+            h: 230,
+            s: 91,
+            l: 63
+        };
+        
+        let colorHistory = [];
+        const maxHistoryItems = 24;
+        
+        // DOM 元素
+        const colorPreview = document.getElementById('colorPreview');
+        const hexValue = document.getElementById('hexValue');
+        const rgbValue = document.getElementById('rgbValue');
+        const hslValue = document.getElementById('hslValue');
+        
+        const redSlider = document.getElementById('redSlider');
+        const greenSlider = document.getElementById('greenSlider');
+        const blueSlider = document.getElementById('blueSlider');
+        const redValue = document.getElementById('redValue');
+        const greenValue = document.getElementById('greenValue');
+        const blueValue = document.getElementById('blueValue');
+        
+        const hueSlider = document.getElementById('hueSlider');
+        const saturationSlider = document.getElementById('saturationSlider');
+        const lightnessSlider = document.getElementById('lightnessSlider');
+        const hueValue = document.getElementById('hueValue');
+        const saturationValue = document.getElementById('saturationValue');
+        const lightnessValue = document.getElementById('lightnessValue');
+        
+        const colorCanvas = document.getElementById('colorCanvas');
+        const colorWheel = document.getElementById('colorWheel');
+        const ctx = colorCanvas.getContext('2d');
+        
+        const colorHistoryContainer = document.getElementById('colorHistory');
+        const harmonyColors = document.getElementById('harmonyColors');
+        const harmonyOptions = document.querySelectorAll('.harmony-option');
+        
+        const gradientCanvas = document.getElementById('gradientCanvas');
+        const gradientCtx = gradientCanvas.getContext('2d');
+        const gradientColor1 = document.getElementById('gradientColor1');
+        const gradientColor2 = document.getElementById('gradientColor2');
+        
+        const eyedropperButton = document.getElementById('eyedropperButton');
+        const themeSwitch = document.getElementById('themeSwitch');
+        const tooltip = document.getElementById('tooltip');
+        
+        const notification = document.getElementById('notification');
+        const notificationMessage = document.getElementById('notificationMessage');
+        const notificationClose = document.getElementById('notificationClose');
+        
+        // 颜色转换函数
+        function rgbToHex(r, g, b) {
+            return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+        }
+        
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+        
+        function rgbToHsl(r, g, b) {
+            r /= 255;
+            g /= 255;
+            b /= 255;
+            
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+            
+            if (max === min) {
+                h = s = 0; // 灰色
+            } else {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                
+                switch (max) {
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+                
+                h /= 6;
+            }
+            
+            return {
+                h: Math.round(h * 360),
+                s: Math.round(s * 100),
+                l: Math.round(l * 100)
+            };
+        }
+        
+        function hslToRgb(h, s, l) {
+            h /= 360;
+            s /= 100;
+            l /= 100;
+            
+            let r, g, b;
+            
+            if (s === 0) {
+                r = g = b = l; // 灰色
+            } else {
+                const hue2rgb = (p, q, t) => {
+                    if (t < 0) t += 1;
+                    if (t > 1) t -= 1;
+                    if (t < 1/6) return p + (q - p) * 6 * t;
+                    if (t < 1/2) return q;
+                    if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                    return p;
+                };
+                
+                const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                const p = 2 * l - q;
+                
+                r = hue2rgb(p, q, h + 1/3);
+                g = hue2rgb(p, q, h);
+                b = hue2rgb(p, q, h - 1/3);
+            }
+            
+            return {
+                r: Math.round(r * 255),
+                g: Math.round(g * 255),
+                b: Math.round(b * 255)
+            };
+        }
+        
+        // 初始化
+        function init() {
+            // 设置画布尺寸
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // 绘制颜色轮
+            drawColorWheel();
+            
+            // 初始化颜色预览
+            updateColorPreview();
+            
+            // 初始化渐变
+            updateGradient();
+            
+            // 初始化颜色和谐
+            updateHarmonyColors();
+            
+            // 从本地存储加载颜色历史
+            loadColorHistory();
+            
+            // 设置事件监听器
+            setupEventListeners();
+            setupGradientEvents();
+            setupPresetEvents();
+        }
+        
+        // 设置画布尺寸
+        function resizeCanvas() {
+            colorCanvas.width = colorWheel.clientWidth;
+            colorCanvas.height = colorWheel.clientHeight;
+            gradientCanvas.width = gradientCanvas.parentElement.clientWidth;
+            
+            drawColorWheel();
+            updateGradient();
+        }
+        
+        // 绘制颜色轮
+        function drawColorWheel() {
+            const width = colorCanvas.width;
+            const height = colorCanvas.height;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = Math.min(centerX, centerY) - 5;
+            
+            // 清除画布
+            ctx.clearRect(0, 0, width, height);
+            
+            // 绘制色相环
+            for (let angle = 0; angle < 360; angle++) {
+                const startAngle = (angle - 0.5) * Math.PI / 180;
+                const endAngle = (angle + 0.5) * Math.PI / 180;
+                
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+                ctx.closePath();
+                
+                const hue = angle;
+                ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
+                ctx.fill();
+            }
+            
+            // 绘制饱和度和亮度方块
+            const squareSize = radius * 1.4;
+            const squareX = centerX - squareSize / 2;
+            const squareY = centerY - squareSize / 2;
+            
+            // 创建渐变
+            const satGradient = ctx.createLinearGradient(squareX, squareY, squareX + squareSize, squareY);
+            satGradient.addColorStop(0, `hsl(${currentColor.h}, 0%, 50%)`);
+            satGradient.addColorStop(1, `hsl(${currentColor.h}, 100%, 50%)`);
+            
+            ctx.fillStyle = satGradient;
+            ctx.fillRect(squareX, squareY, squareSize, squareSize);
+            
+            const lightGradient = ctx.createLinearGradient(squareX, squareY, squareX, squareY + squareSize);
+            lightGradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+            lightGradient.addColorStop(0.5, 'rgba(255, 255, 255, 0)');
+            lightGradient.addColorStop(1, 'rgba(0, 0, 0, 1)');
+            
+            ctx.fillStyle = lightGradient;
+            ctx.fillRect(squareX, squareY, squareSize, squareSize);
+            
+            // 绘制当前颜色位置指示器
+            const satPercent = currentColor.s / 100;
+            const lightPercent = currentColor.l / 100;
+            const adjustedLightPercent = lightPercent * 2 - 1;
+            
+            const indicatorX = squareX + squareSize * satPercent;
+            const indicatorY = squareY + squareSize * (1 - (adjustedLightPercent + 1) / 2);
+            
+            ctx.beginPath();
+            ctx.arc(indicatorX, indicatorY, 8, 0, Math.PI * 2);
+            ctx.strokeStyle = lightPercent > 0.5 ? 'black' : 'white';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.closePath();
+        }
+        
+        // 更新颜色预览
+        function updateColorPreview() {
+            const hexColor = rgbToHex(currentColor.r, currentColor.g, currentColor.b);
+            colorPreview.style.backgroundColor = hexColor;
+            
+            // 更新颜色值显示
+            hexValue.value = hexColor;
+            rgbValue.value = `rgb(${currentColor.r}, ${currentColor.g}, ${currentColor.b})`;
+            hslValue.value = `hsl(${Math.round(currentColor.h)}, ${Math.round(currentColor.s)}%, ${Math.round(currentColor.l)}%)`;
+            
+            // 更新RGB滑块
+            redSlider.value = currentColor.r;
+            greenSlider.value = currentColor.g;
+            blueSlider.value = currentColor.b;
+            redValue.value = currentColor.r;
+            greenValue.value = currentColor.g;
+            blueValue.value = currentColor.b;
+            
+            // 更新HSL滑块
+            hueSlider.value = currentColor.h;
+            saturationSlider.value = currentColor.s;
+            lightnessSlider.value = currentColor.l;
+            hueValue.value = Math.round(currentColor.h);
+            saturationValue.value = Math.round(currentColor.s);
+            lightnessValue.value = Math.round(currentColor.l);
+            
+            // 更新渐变
+            gradientColor1.value = hexColor;
+            updateGradient();
+            
+            // 更新颜色和谐
+            updateHarmonyColors();
+            
+            // 重绘颜色轮
+            drawColorWheel();
+        }
+        
+        // 更新颜色和谐
+        function updateHarmonyColors() {
+            harmonyColors.innerHTML = '';
+            
+            // 获取当前选中的和谐类型
+            const activeHarmony = document.querySelector('.harmony-option.active').dataset.harmony;
+            
+            // 计算和谐颜色
+            let colors = [];
+            
+            switch (activeHarmony) {
+                case 'complementary':
+                    colors = [
+                        { h: currentColor.h, s: currentColor.s, l: currentColor.l },
+                        { h: (currentColor.h + 180) % 360, s: currentColor.s, l: currentColor.l }
+                    ];
+                    break;
+                    
+                case 'analogous':
+                    colors = [
+                        { h: (currentColor.h - 30 + 360) % 360, s: currentColor.s, l: currentColor.l },
+                        { h: currentColor.h, s: currentColor.s, l: currentColor.l },
+                        { h: (currentColor.h + 30) % 360, s: currentColor.s, l: currentColor.l }
+                    ];
+                    break;
+                    
+                case 'triadic':
+                    colors = [
+                        { h: currentColor.h, s: currentColor.s, l: currentColor.l },
+                        { h: (currentColor.h + 120) % 360, s: currentColor.s, l: currentColor.l },
+                        { h: (currentColor.h + 240) % 360, s: currentColor.s, l: currentColor.l }
+                    ];
+                    break;
+                    
+                case 'split-complementary':
+                    colors = [
+                        { h: currentColor.h, s: currentColor.s, l: currentColor.l },
+                        { h: (currentColor.h + 150) % 360, s: currentColor.s, l: currentColor.l },
+                        { h: (currentColor.h + 210) % 360, s: currentColor.s, l: currentColor.l }
+                    ];
+                    break;
+                    
+                case 'tetradic':
+                    colors = [
+                        { h: currentColor.h, s: currentColor.s, l: currentColor.l },
+                        { h: (currentColor.h + 90) % 360, s: currentColor.s, l: currentColor.l },
+                        { h: (currentColor.h + 180) % 360, s: currentColor.s, l: currentColor.l },
+                        { h: (currentColor.h + 270) % 360, s: currentColor.s, l: currentColor.l }
+                    ];
+                    break;
+            }
+            
+            // 渲染和谐颜色
+            colors.forEach(color => {
+                const rgb = hslToRgb(color.h, color.s, color.l);
+                const hexColor = rgbToHex(rgb.r, rgb.g, rgb.b);
+                
+                const colorElement = document.createElement('div');
+                colorElement.className = 'harmony-color';
+                colorElement.style.backgroundColor = hexColor;
+                colorElement.dataset.hex = hexColor;
+                colorElement.dataset.h = color.h;
+                colorElement.dataset.s = color.s;
+                colorElement.dataset.l = color.l;
+                
+                colorElement.addEventListener('click', () => {
+                    const h = parseInt(colorElement.dataset.h);
+                    const s = parseInt(colorElement.dataset.s);
+                    const l = parseInt(colorElement.dataset.l);
+                    const rgb = hslToRgb(h, s, l);
+                    
+                    currentColor = {
+                        r: rgb.r,
+                        g: rgb.g,
+                        b: rgb.b,
+                        h: h,
+                        s: s,
+                        l: l
+                    };
+                    
+                    updateColorPreview();
+                    addToColorHistory(rgbToHex(rgb.r, rgb.g, rgb.b));
+                });
+                
+                colorElement.addEventListener('mouseover', (e) => {
+                    showTooltip(e, hexColor);
+                });
+                
+                colorElement.addEventListener('mouseout', () => {
+                    hideTooltip();
+                });
+                
+                harmonyColors.appendChild(colorElement);
+            });
+        }
+        
+        // 保存颜色到历史记录
+        function addToColorHistory(hexColor) {
+            // 检查颜色是否已存在
+            const existingIndex = colorHistory.indexOf(hexColor);
+            if (existingIndex !== -1) {
+                // 如果存在，移除它
+                colorHistory.splice(existingIndex, 1);
+            }
+            
+            // 添加到开头
+            colorHistory.unshift(hexColor);
+            
+            // 限制历史记录长度
+            if (colorHistory.length > maxHistoryItems) {
+                colorHistory.pop();
+            }
+            
+            // 更新历史记录显示
+            updateColorHistoryDisplay();
+            
+            // 保存到本地存储
+            localStorage.setItem('colorHistory', JSON.stringify(colorHistory));
+        }
+        
+        // 更新颜色历史记录显示
+        function updateColorHistoryDisplay() {
+            colorHistoryContainer.innerHTML = '';
+            
+            colorHistory.forEach(hexColor => {
+                const colorElement = document.createElement('div');
+                colorElement.className = 'history-color';
+                colorElement.style.backgroundColor = hexColor;
+                
+                colorElement.addEventListener('click', () => {
+                    const rgb = hexToRgb(hexColor);
+                    const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+                    
+                    currentColor = {
+                        r: rgb.r,
+                        g: rgb.g,
+                        b: rgb.b,
+                        h: hsl.h,
+                        s: hsl.s,
+                        l: hsl.l
+                    };
+                    
+                    updateColorPreview();
+                });
+                
+                colorElement.addEventListener('mouseover', (e) => {
+                    showTooltip(e, hexColor);
+                });
+                
+                colorElement.addEventListener('mouseout', () => {
+                    hideTooltip();
+                });
+                
+                colorHistoryContainer.appendChild(colorElement);
+            });
+        }
+        
+        // 从本地存储加载颜色历史
+        function loadColorHistory() {
+            const savedHistory = localStorage.getItem('colorHistory');
+            if (savedHistory) {
+                colorHistory = JSON.parse(savedHistory);
+                updateColorHistoryDisplay();
+            }
+        }
+        
+        // 显示工具提示
+        function showTooltip(e, text) {
+            tooltip.textContent = text;
+            tooltip.style.left = `${e.pageX + 10}px`;
+            tooltip.style.top = `${e.pageY + 10}px`;
+            tooltip.style.opacity = '1';
+        }
+        
+        // 隐藏工具提示
+        function hideTooltip() {
+            tooltip.style.opacity = '0';
+        }
+        
+        // 显示通知
+        function showNotification(message) {
+            notificationMessage.textContent = message;
+            notification.classList.add('show');
+            
+            // 5秒后自动隐藏
+            setTimeout(() => {
+                hideNotification();
+            }, 5000);
+        }
+        
+        // 隐藏通知
+        function hideNotification() {
+            notification.classList.remove('show');
+        }
+        
+        // 设置事件监听器
+        function setupEventListeners() {
+            // RGB滑块事件
+            redSlider.addEventListener('input', () => {
+                currentColor.r = parseInt(redSlider.value);
+                redValue.value = currentColor.r;
+                
+                const hsl = rgbToHsl(currentColor.r, currentColor.g, currentColor.b);
+                currentColor.h = hsl.h;
+                currentColor.s = hsl.s;
+                currentColor.l = hsl.l;
+                
+                updateColorPreview();
+            });
+            
+            greenSlider.addEventListener('input', () => {
+                currentColor.g = parseInt(greenSlider.value);
+                greenValue.value = currentColor.g;
+                
+                const hsl = rgbToHsl(currentColor.r, currentColor.g, currentColor.b);
+                currentColor.h = hsl.h;
+                currentColor.s = hsl.s;
+                currentColor.l = hsl.l;
+                
+                updateColorPreview();
+            });
+            
+            blueSlider.addEventListener('input', () => {
+                currentColor.b = parseInt(blueSlider.value);
+                blueValue.value = currentColor.b;
+                
+                const hsl = rgbToHsl(currentColor.r, currentColor.g, currentColor.b);
+                currentColor.h = hsl.h;
+                currentColor.s = hsl.s;
+                currentColor.l = hsl.l;
+                
+                updateColorPreview();
+            });
+            
+            // RGB数值输入事件
+            redValue.addEventListener('change', () => {
+                let val = parseInt(redValue.value);
+                val = isNaN(val) ? 0 : Math.max(0, Math.min(255, val));
+                currentColor.r = val;
+                redValue.value = val;
+                redSlider.value = val;
+                
+                const hsl = rgbToHsl(currentColor.r, currentColor.g, currentColor.b);
+                currentColor.h = hsl.h;
+                currentColor.s = hsl.s;
+                currentColor.l = hsl.l;
+                
+                updateColorPreview();
+            });
+            
+            greenValue.addEventListener('change', () => {
+                let val = parseInt(greenValue.value);
+                val = isNaN(val) ? 0 : Math.max(0, Math.min(255, val));
+                currentColor.g = val;
+                greenValue.value = val;
+                greenSlider.value = val;
+                
+                const hsl = rgbToHsl(currentColor.r, currentColor.g, currentColor.b);
+                currentColor.h = hsl.h;
+                currentColor.s = hsl.s;
+                currentColor.l = hsl.l;
+                
+                updateColorPreview();
+            });
+            
+            blueValue.addEventListener('change', () => {
+                let val = parseInt(blueValue.value);
+                val = isNaN(val) ? 0 : Math.max(0, Math.min(255, val));
+                currentColor.b = val;
+                blueValue.value = val;
+                blueSlider.value = val;
+                
+                const hsl = rgbToHsl(currentColor.r, currentColor.g, currentColor.b);
+                currentColor.h = hsl.h;
+                currentColor.s = hsl.s;
+                currentColor.l = hsl.l;
+                
+                updateColorPreview();
+            });
+            
+            // HSL滑块事件
+            hueSlider.addEventListener('input', () => {
+                currentColor.h = parseInt(hueSlider.value);
+                hueValue.value = currentColor.h;
+                
+                const rgb = hslToRgb(currentColor.h, currentColor.s, currentColor.l);
+                currentColor.r = rgb.r;
+                currentColor.g = rgb.g;
+                currentColor.b = rgb.b;
+                
+                updateColorPreview();
+            });
+            
+            saturationSlider.addEventListener('input', () => {
+                currentColor.s = parseInt(saturationSlider.value);
+                saturationValue.value = currentColor.s;
+                
+                const rgb = hslToRgb(currentColor.h, currentColor.s, currentColor.l);
+                currentColor.r = rgb.r;
+                currentColor.g = rgb.g;
+                currentColor.b = rgb.b;
+                
+                updateColorPreview();
+            });
+            
+            lightnessSlider.addEventListener('input', () => {
+                currentColor.l = parseInt(lightnessSlider.value);
+                lightnessValue.value = currentColor.l;
+                
+                const rgb = hslToRgb(currentColor.h, currentColor.s, currentColor.l);
+                currentColor.r = rgb.r;
+                currentColor.g = rgb.g;
+                currentColor.b = rgb.b;
+                
+                updateColorPreview();
+            });
+            
+            // HSL数值输入事件
+            hueValue.addEventListener('change', () => {
+                let val = parseInt(hueValue.value);
+                val = isNaN(val) ? 0 : Math.max(0, Math.min(360, val));
+                currentColor.h = val;
+                hueValue.value = val;
+                hueSlider.value = val;
+                
+                const rgb = hslToRgb(currentColor.h, currentColor.s, currentColor.l);
+                currentColor.r = rgb.r;
+                currentColor.g = rgb.g;
+                currentColor.b = rgb.b;
+                
+                updateColorPreview();
+            });
+            
+            saturationValue.addEventListener('change', () => {
+                let val = parseInt(saturationValue.value);
+                val = isNaN(val) ? 0 : Math.max(0, Math.min(100, val));
+                currentColor.s = val;
+                saturationValue.value = val;
+                saturationSlider.value = val;
+                
+                const rgb = hslToRgb(currentColor.h, currentColor.s, currentColor.l);
+                currentColor.r = rgb.r;
+                currentColor.g = rgb.g;
+                currentColor.b = rgb.b;
+                
+                updateColorPreview();
+            });
+            
+            lightnessValue.addEventListener('change', () => {
+                let val = parseInt(lightnessValue.value);
+                val = isNaN(val) ? 0 : Math.max(0, Math.min(100, val));
+                currentColor.l = val;
+                lightnessValue.value = val;
+                lightnessSlider.value = val;
+                
+                const rgb = hslToRgb(currentColor.h, currentColor.s, currentColor.l);
+                currentColor.r = rgb.r;
+                currentColor.g = rgb.g;
+                currentColor.b = rgb.b;
+                
+                updateColorPreview();
+            });
+            
+            // 颜色输入框事件
+            hexValue.addEventListener('change', () => {
+                const hex = hexValue.value;
+                const rgb = hexToRgb(hex);
+                
+                if (rgb) {
+                    currentColor.r = rgb.r;
+                    currentColor.g = rgb.g;
+                    currentColor.b = rgb.b;
+                    
+                    const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+                    currentColor.h = hsl.h;
+                    currentColor.s = hsl.s;
+                    currentColor.l = hsl.l;
+                    
+                    updateColorPreview();
+                    addToColorHistory(hex);
+                }
+            });
+            
+            // 复制按钮事件
+            document.getElementById('copyHex').addEventListener('click', () => {
+                navigator.clipboard.writeText(hexValue.value)
+                    .then(() => {
+                        showNotification('HEX颜色代码已复制到剪贴板');
+                    })
+                    .catch(err => {
+                        console.error('复制失败:', err);
+                    });
+            });
+            
+            document.getElementById('copyRgb').addEventListener('click', () => {
+                navigator.clipboard.writeText(rgbValue.value)
+                    .then(() => {
+                        showNotification('RGB颜色代码已复制到剪贴板');
+                    })
+                    .catch(err => {
+                        console.error('复制失败:', err);
+                    });
+            });
+            
+            document.getElementById('copyHsl').addEventListener('click', () => {
+                navigator.clipboard.writeText(hslValue.value)
+                    .then(() => {
+                        showNotification('HSL颜色代码已复制到剪贴板');
+                    })
+                    .catch(err => {
+                        console.error('复制失败:', err);
+                    });
+            });
+            
+            // 颜色轮事件
+            colorCanvas.addEventListener('mousedown', (e) => {
+                handleColorWheelInteraction(e);
+                
+                document.addEventListener('mousemove', handleColorWheelInteraction);
+                document.addEventListener('mouseup', () => {
+                    document.removeEventListener('mousemove', handleColorWheelInteraction);
+                    addToColorHistory(rgbToHex(currentColor.r, currentColor.g, currentColor.b));
+                }, { once: true });
+            });
+            
+            // 颜色和谐选项事件
+            harmonyOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    harmonyOptions.forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                    updateHarmonyColors();
+                });
+            });
+            
+            // 渐变颜色选择事件
+            gradientColor1.addEventListener('input', updateGradient);
+            gradientColor2.addEventListener('input', updateGradient);
+            
+            // 屏幕取色器事件
+            if (window.EyeDropper) {
+                eyedropperButton.addEventListener('click', async () => {
+                    try {
+                        const eyeDropper = new EyeDropper();
+                        const result = await eyeDropper.open();
+                        const hex = result.sRGBHex;
+                        const rgb = hexToRgb(hex);
+                        
+                        if (rgb) {
+                            currentColor.r = rgb.r;
+                            currentColor.g = rgb.g;
+                            currentColor.b = rgb.b;
+                            
+                            const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+                            currentColor.h = hsl.h;
+                            currentColor.s = hsl.s;
+                            currentColor.l = hsl.l;
+                            
+                            updateColorPreview();
+                            addToColorHistory(hex);
+                        }
+                    } catch (error) {
+                        console.error('屏幕取色器错误:', error);
+                    }
+                });
+            } else {
+                eyedropperButton.style.display = 'none';
+            }
+            
+            // 主题切换事件
+            themeSwitch.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                if (document.body.classList.contains('dark-mode')) {
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+            
+            // 通知关闭按钮事件
+            notificationClose.addEventListener('click', hideNotification);
+            
+            // 加载保存的主题
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+        }
+        
+        // 处理颜色轮交互
+        function handleColorWheelInteraction(e) {
+            const rect = colorCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const width = colorCanvas.width;
+            const height = colorCanvas.height;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = Math.min(centerX, centerY) - 5;
+            
+            const squareSize = radius * 1.4;
+            const squareX = centerX - squareSize / 2;
+            const squareY = centerY - squareSize / 2;
+            
+            // 检查点击是否在方块内
+            if (x >= squareX && x <= squareX + squareSize && y >= squareY && y <= squareY + squareSize) {
+                // 计算饱和度和亮度
+                const satPercent = (x - squareX) / squareSize;
+                const lightPercent = 1 - (y - squareY) / squareSize;
+                
+                currentColor.s = Math.max(0, Math.min(100, Math.round(satPercent * 100)));
+                currentColor.l = Math.max(0, Math.min(100, Math.round(lightPercent * 100)));
+                
+                const rgb = hslToRgb(currentColor.h, currentColor.s, currentColor.l);
+                currentColor.r = rgb.r;
+                currentColor.g = rgb.g;
+                currentColor.b = rgb.b;
+                
+                updateColorPreview();
+            }
+        }
+        
+        // 设置预设颜色的点击事件
+        function setupPresetEvents() {
+            const presetColors = document.querySelectorAll('.preset-color');
+            presetColors.forEach(preset => {
+                preset.addEventListener('click', () => {
+                    const colors = preset.dataset.colors.split(',');
+                    if (colors.length >= 2) {
+                        // 更新渐变颜色
+                        gradientColor1.value = colors[0];
+                        gradientColor2.value = colors[1];
+                        
+                        // 更新渐变色数组
+                        gradientColors[0].color = colors[0];
+                        gradientColors[gradientColors.length - 1].color = colors[1];
+                        
+                        // 如果有更多颜色，添加为中间色标
+                        if (colors.length > 2) {
+                            gradientColors = [
+                                { color: colors[0], position: 0 },
+                                { color: colors[colors.length - 1], position: 100 }
+                            ];
+                            
+                            // 添加中间色标
+                            for (let i = 1; i < colors.length - 1; i++) {
+                                const position = Math.round((i / (colors.length - 1)) * 100);
+                                gradientColors.push({ color: colors[i], position: position });
+                            }
+                            
+                            gradientColors.sort((a, b) => a.position - b.position);
+                        }
+                        
+                        // 更新渐变显示
+                        updateGradientColorStops();
+                        updateGradient();
+                    }
+                });
+            });
+        }
+        
+        // 初始化应用
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
